@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rpg.user.dao.UserDAO">
+
+    <resultMap id="userResultMap" type="com.rpg.user.dto.UserDTO">
+        <id property="code" column="USER_CODE"/>
+        <result property="name" column="USER_NAME"/>
+        <result property="charm" column="USER_CHARM"/>
+        <result property="bagCode" column="USER_BAG"/>
+        <result property="equippedItemCode" column="USER_EQUIPPED"/>
+        <result property="money" column="USER_MONEY"/>
+    </resultMap>
+
+    <resultMap id="userItemResultMap" type="com.rpg.user.dto.UserItemDTO">
+        <id property="code" column="ITEM_CODE"/>
+        <result property="category" column="ITEM_CATEGORY"/>
+        <result property="name" column="ITEM_NAME"/>
+        <result property="price" column="ITEM_PRICE"/>
+        <result property="charm" column="ITEM_CHARM"/>
+    </resultMap>
+
+    <!--  내 상태 확인하기  -->
+    <select id="getUserInfo" resultMap="userResultMap">
+        SELECT
+        *
+        FROM
+        TBL_USER
+        WHERE
+        USER_CODE = #{ code }
+    </select>
+
+<!--  유저 소유 아이템 리스트 가져오기  -->
+    <select id="getUserItemList" resultMap="userItemResultMap">
+        SELECT * FROM
+        TBL_ITEM
+        WHERE ITEM_CODE IN
+        (SELECT ITEM_CODE
+        FROM TBL_BAG
+        WHERE BAG_CODE = #{ bagCode });
+    </select>
+
+    <select id="getUserEquippedItem" resultMap="userItemResultMap">
+        SELECT * FROM
+        TBL_ITEM
+        WHERE ITEM_CODE = #{ code }
+    </select>
+
+    <!--  유저 이름 변경  -->
+    <update id="updateUserName">
+        UPDATE TBL_USER
+        SET USER_NAME = #{ name }
+        WHERE
+        USER_CODE = #{ code }
+    </update>
+
+    <!--  유저 매력도 변경(하락만)  -->
+    <update id="updateUserCharm">
+        UPDATE TBL_USER
+        SET USER_CHARM = USER_CHARM - #{ charm }
+        WHERE
+        USER_CODE = #{ code }
+    </update>
+
+    <!--  유저가 가진 돈 변경(상승만)  -->
+    <update id="updateUserMoney">
+        UPDATE TBL_USER
+        SET USER_MONEY = USER_MONEY + #{ money }
+        WHERE
+        USER_CODE = #{ code }
+    </update>
+
+
+</mapper>

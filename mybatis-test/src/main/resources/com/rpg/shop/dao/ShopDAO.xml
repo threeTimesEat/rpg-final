@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rpg.shop.dao.ShopDAO">
+
+    <resultMap id="shopAndItemResultMap" type="com.rpg.shop.dto.ShopAndItemDTO">
+        <id property="shopCode" column="SHOP_CODE"/>
+        <result property="itemCode" column="ITEM_CODE"/>
+        <collection property="shopItemList" ofType="com.rpg.item.dto.ItemDTO">
+            <id property="code" column="ITEM_CODE"/>
+            <result property="category" column="ITEM_CATEGORY"/>
+            <result property="name" column="ITEM_NAME"/>
+            <result property="price" column="ITEM_PRICE"/>
+            <result property="charm" column="ITEM_CHARM"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="itemResultMap" type="com.rpg.item.dto.ItemDTO">
+        <id property="code" column="ITEM_CODE"/>
+        <result property="category" column="ITEM_CATEGORY"/>
+        <result property="name" column="ITEM_NAME"/>
+        <result property="price" column="ITEM_PRICE"/>
+        <result property="charm" column="ITEM_CHARM"/>
+    </resultMap>
+<!--    <resultMap id="shopResultMap" type="com.rpg.shop.dto.ShopDTO">-->
+<!--        <id property="shopCode" column="SHOP_CODE"/>-->
+<!--        <id property="itemCode" column="ITEM_CODE"/>-->
+<!--    </resultMap>-->
+
+    <!-- 가게의 아이템 조회  -->
+    <select id="getItemShopItemList" resultMap="shopAndItemResultMap">
+        SELECT A.SHOP_CODE
+        , A.ITEM_CODE
+        , B.ITEM_CODE
+        , B.ITEM_CATEGORY
+        , B.ITEM_NAME
+        , B.ITEM_PRICE
+        , B.ITEM_CHARM
+        FROM TBL_SHOP A
+        LEFT JOIN TBL_ITEM B ON (A.ITEM_CODE = B.ITEM_CODE)
+        <if test="shopType == 1">
+            WHERE
+            B.ITEM_CATEGORY = 1
+        </if>
+        <if test="shopType == 2">
+            WHERE
+            B.ITEM_CATEGORY = 2
+        </if>
+        ORDER BY A.ITEM_CODE
+    </select>
+
+<!--    <select id="getItemShopItemList" parameterMap="shopResultMap">-->
+<!--        SELECT-->
+<!--        B.ITEM_CODE,-->
+<!--        B.ITEM_NAME,-->
+<!--        B.ITEM_PRICE,-->
+<!--        B.ITEM_CHARM-->
+<!--        FROM-->
+<!--        TBL_SHOP A-->
+<!--        JOIN TBL_ITEM B ON (B.ITEM_CODE = A.ITEM_CODE)-->
+<!--        <set>-->
+<!--            <if test="shopType == 1">-->
+<!--                WHERE-->
+<!--                B.ITEM_CATEGORY = 1-->
+<!--            </if>-->
+<!--            <if test="shopType == 2">-->
+<!--                WHERE-->
+<!--                B.ITEM_CATEGORY = 2-->
+
+<!--            </if>-->
+<!--        </set>-->
+<!--    </select>-->
+
+<!--    <select id="selectGiftList" parameterMap="shopResultMap">-->
+<!--        SELECT-->
+<!--        B.ITEM_CODE,-->
+<!--        B.ITEM_NAME,-->
+<!--        B.ITEM_PRICE,-->
+<!--        B.ITEM_CHARM-->
+<!--        FROM-->
+<!--        TBL_SHOP A-->
+<!--        JOIN TBL_ITEM B ON (B.ITEM_CODE = A.ITEM_CODE)-->
+<!--        WHERE-->
+<!--        B.ITEM_CATEGORY = 2-->
+<!--    </select>-->
+    <select id="getBuyClothes" resultMap="itemResultMap">
+        SELECT
+        ITEM_CODE
+        , ITEM_CATEGORY
+        , ITEM_NAME
+        , ITEM_PRICE
+        , ITEM_CHARM
+        FROM TBL_ITEM
+        WHERE ITEM_CODE =#{ itemIndex }
+    </select>
+    <select id="getBuyGift" resultMap="itemResultMap">
+        SELECT
+        ITEM_CODE
+        , ITEM_CATEGORY
+        , ITEM_NAME
+        , ITEM_PRICE
+        , ITEM_CHARM
+        FROM TBL_ITEM
+        WHERE ITEM_CODE =#{ itemIndex }
+    </select>
+
+<!--    <update id="getBuyClothes" parameterType="com.rpg.user.dto.UserDTO">-->
+<!--        UPDATE-->
+<!--        TBL_USER-->
+<!--        SET USER_MONEY = USER_MONEY -(-->
+<!--        SELECT ITEM_PRICE-->
+<!--        FROM TBL_ITEM-->
+<!--        WHERE ITEM_CODE =#{ itemIndex }-->
+<!--        )-->
+<!--    </update>-->
+
+<!--    <update id="getBuyClothes" parameterType="com.rpg.user.dto.UserDTO">-->
+<!--        SET USER_MONEY=USER_MONEY-(-->
+<!--        SELECT ITEM_PRICE-->
+<!--        FROM TBL_ITEM-->
+<!--        WHERE ITEM_CODE =#{ itemIndex }-->
+<!--        )-->
+<!--        INSERT INTO TBL_BAG(ITEM_CODE)-->
+<!--        VALUES (#{ itemIndex })-->
+<!--    </update>-->
+<!--    <update id="getBuyGift" parameterType="com.rpg.user.dto.UserDTO">-->
+<!--    SET USER_MONEY=USER_MONEY-(-->
+<!--    SELECT ITEM_PRICE-->
+<!--    FROM TBL_ITEM-->
+<!--    WHERE ITEM_CODE =#{ itemIndex }-->
+<!--    )-->
+<!--    INSERT INTO TBL_BAG(ITEM_CODE)-->
+<!--    VALUES (#{ itemIndex })-->
+<!--    </update>-->
+    <update id="equipItem" parameterType="com.rpg.user.dto.UserDTO">
+        SET USER_EQUIPPED=(
+        SELECT *
+        FROM TBL_ITEM
+        WHERE ITEM_CODE =#{ buyItemDTO }
+        )
+    </update>
+</mapper>

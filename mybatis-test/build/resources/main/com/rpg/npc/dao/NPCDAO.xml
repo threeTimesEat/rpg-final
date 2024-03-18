@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rpg.npc.dao.NpcDAO">
+
+    <resultMap id="npcResultMap" type="com.rpg.npc.dto.NPCDTO">
+        <id property="code" column="NPC_CODE"/>
+        <result property="name" column="NPC_NAME"/>
+        <result property="charm" column="NPC_CHARM"/>
+    </resultMap>
+
+    <!-- npc 리스트 출력 -->
+    <select id="selectAllNpcList" resultMap="npcResultMap">
+        SELECT
+        *
+        FROM
+        TBL_NPC
+    </select>
+
+    <!-- 특정 npc 정보 출력 -->
+    <select id="getNpcInfo" resultMap="npcResultMap">
+        SELECT
+        NPC_CODE,
+        NPC_NAME
+        FROM
+        TBL_NPC
+        WHERE
+        NPC_CODE = #{ code }
+    </select>
+
+    <!--  npc 매력도 상승  -->
+    <update id="updateNpcCharm">
+        UPDATE TBL_NPC
+        SET NPC_CHARM = NPC_CHARM + #{ charm }
+        WHERE
+        NPC_CODE = #{ code }
+    </update>
+
+</mapper>
